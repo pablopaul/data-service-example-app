@@ -1,18 +1,19 @@
-import 'rxjs/add/operator/let';
-import { Observable } from 'rxjs/Observable';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { Store } from '@ngrx/store';
 
 import * as fromRoot from '../reducers';
 import * as layout from '../actions/layout';
 
+import { DbService } from '../services/database';
+import { BooksService } from '../services/books';
+import { Observable } from "rxjs";
 
 @Component({
   selector: 'bc-app',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <bc-layout>
-      <bc-sidenav [open]="showSidenav$ | async">
+    
+      <bc-sidenav [open]="showSideNav">
         <bc-nav-item (activate)="closeSidenav()" routerLink="/" icon="book" hint="View your book collection">
           My Collection
         </bc-nav-item>
@@ -20,36 +21,50 @@ import * as layout from '../actions/layout';
           Browse Books
         </bc-nav-item>
       </bc-sidenav>
+      
       <bc-toolbar (openMenu)="openSidenav()">
         Book Collection
       </bc-toolbar>
-
+            
       <router-outlet></router-outlet>
     </bc-layout>
   `
 })
-export class AppComponent {
-  showSidenav$: Observable<boolean>;
 
-  constructor(private store: Store<fromRoot.State>) {
-    /**
-     * Selectors can be applied with the `select` operator which passes the state
-     * tree to the provided selector
-     */
-    this.showSidenav$ = this.store.select(fromRoot.getShowSidenav);
+export class AppComponent {
+  showSideNav: Boolean;
+
+  constructor(private dbService: DbService, private booksService: BooksService) {
+
+    const localBookCollection$ = this.dbService.loadCollection();
+
+    // Load each book from index db into BooksService
+    localBookCollection$.subscribe({
+      next: (bookArray) => {
+
+        // Put bookArray into booksService
+        this.booksService.bookEntities.next(bookArray);
+
+        // Push id to array to check if already in collection
+        bookArray.forEach(
+          (book: any) => {
+            this.booksService.idsInCollection.push(book.id);
+            this.booksService.checkIfSelectedBookIsInCollection();
+          }
+        )
+      }
+    });
+
+    // Sidenav closed by default
+    this.showSideNav = false;
   }
 
   closeSidenav() {
-    /**
-     * All state updates are handled through dispatched actions in 'container'
-     * components. This provides a clear, reproducible history of state
-     * updates and user interaction through the life of our
-     * application.
-     */
-    this.store.dispatch(new layout.CloseSidenavAction());
+    this.showSideNav = false;
   }
 
   openSidenav() {
-    this.store.dispatch(new layout.OpenSidenavAction());
+    this.showSideNav = true;
   }
+
 }

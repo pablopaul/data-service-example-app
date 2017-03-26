@@ -1,7 +1,8 @@
-import 'rxjs/add/operator/let';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+import { BooksService } from '../services/books';
 
 import * as fromRoot from '../reducers';
 import { Book } from '../models/book';
@@ -30,10 +31,20 @@ import { Book } from '../models/book';
     }
   `]
 })
-export class CollectionPageComponent {
-  books$: Observable<Book[]>;
+export class CollectionPageComponent implements OnInit {
+  books: any;
+  books$: any;
+  collectionBookIds$: Observable<string>;
 
-  constructor(store: Store<fromRoot.State>) {
-    this.books$ = store.select(fromRoot.getBookCollection);
+  constructor(private BooksService: BooksService) {
+
+    //this.books$ = store.select(fromRoot.getBookCollection);
+    this.books$ = this.BooksService.bookEntities.asObservable();
   }
+
+  ngOnInit() {
+
+  }
+
+
 }

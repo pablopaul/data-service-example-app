@@ -11,7 +11,7 @@ import { Component, Output, Input, EventEmitter } from '@angular/core';
       <md-card-title>Find a Book</md-card-title>
       <md-card-content>
         <md-input-container>
-          <input mdInput placeholder="Search for a book" [value]="query" (keyup)="search.emit($event.target.value)">
+          <input mdInput placeholder="Search for a book" (keyup)="search.emit($event.target.value)">
         </md-input-container>
         <md-spinner [class.show]="searching"></md-spinner>
       </md-card-content>
@@ -47,7 +47,6 @@ import { Component, Output, Input, EventEmitter } from '@angular/core';
   `]
 })
 export class BookSearchComponent {
-  @Input() query = '';
   @Input() searching = false;
-  @Output() search = new EventEmitter<string>();
+  @Output() search: EventEmitter<string> = new EventEmitter<string>();
 }

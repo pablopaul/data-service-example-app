@@ -22,13 +22,14 @@ import { SelectedBookPageComponent } from './containers/selected-book-page';
 import { CollectionPageComponent } from './containers/collection-page';
 import { NotFoundPageComponent } from './containers/not-found-page';
 
+import { DbService } from './services/database';
 import { GoogleBooksService } from './services/google-books';
+import { AppService } from './services/app';
+import { BooksService } from './services/books';
 
 import { routes } from './routes';
 import { reducer } from './reducers';
 import { schema } from './db';
-
-
 
 @NgModule({
   imports: [
@@ -90,7 +91,10 @@ import { schema } from './db';
   ],
   providers: [
     BookExistsGuard,
-    GoogleBooksService
+    GoogleBooksService,
+    AppService,
+    BooksService,
+    DbService
   ],
   bootstrap: [
     AppComponent

@@ -29,16 +29,16 @@ export class CollectionEffects {
    * Wrapping the database open call in `defer` makes
    * effect easier to test.
    */
-  @Effect({ dispatch: false })
+  /*@Effect({ dispatch: false })
   openDB$: Observable<any> = defer(() => {
     return this.db.open('books_app');
-  });
+  });*/
 
   /**
    * This effect makes use of the `startWith` operator to trigger
    * the effect immediately on startup.
    */
-  @Effect()
+/*  @Effect()
   loadCollection$: Observable<Action> = this.actions$
     .ofType(collection.ActionTypes.LOAD)
     .startWith(new collection.LoadAction())
@@ -47,7 +47,7 @@ export class CollectionEffects {
         .toArray()
         .map((books: Book[]) => new collection.LoadSuccessAction(books))
         .catch(error => of(new collection.LoadFailAction(error)))
-    );
+    );*/
 
   @Effect()
   addBookToCollection$: Observable<Action> = this.actions$

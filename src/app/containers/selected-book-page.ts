@@ -1,15 +1,14 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { BooksService } from '../services/books';
 import { Observable } from 'rxjs/Observable';
-
+import 'rxjs/add/observable/from';
 import * as fromRoot from '../reducers';
 import * as collection from '../actions/collection';
 import { Book } from '../models/book';
 
-
 @Component({
   selector: 'bc-selected-book-page',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <bc-book-detail
       [book]="book$ | async"
@@ -20,19 +19,34 @@ import { Book } from '../models/book';
   `
 })
 export class SelectedBookPageComponent {
-  book$: Observable<Book>;
+  book$: any;
   isSelectedBookInCollection$: Observable<boolean>;
 
-  constructor(private store: Store<fromRoot.State>) {
-    this.book$ = store.select(fromRoot.getSelectedBook);
-    this.isSelectedBookInCollection$ = store.select(fromRoot.isSelectedBookInCollection);
+  constructor(private store: Store<fromRoot.State>,
+              private BooksService: BooksService) {
+
+    // Check if current book is in collection
+    this.BooksService.checkIfSelectedBookIsInCollection();
+    this.isSelectedBookInCollection$ = this.BooksService.isSelectedBookInCollection$;
+
+    this.BooksService.bookEntities.subscribe({
+      next: (bookArray: any) => {
+
+        // Get the currently selected book
+        const selectedBookArray = bookArray.filter( (book: any) => book.id === this.BooksService.getSelectedBookId() );
+
+        // Make the selected book available for the Angular async pipe
+        this.book$ = Observable.from(selectedBookArray);
+      }
+    });
   }
 
   addToCollection(book: Book) {
-    this.store.dispatch(new collection.AddBookAction(book));
+    this.BooksService.addToCollection(book);
+
   }
 
   removeFromCollection(book: Book) {
-    this.store.dispatch(new collection.RemoveBookAction(book));
+    this.BooksService.removeFromCollection(book.id);
   }
 }
