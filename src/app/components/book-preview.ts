@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Book } from '../models/book';
 import { BooksService } from '../services/books';
+import {Observable} from "rxjs";
 
 
 @Component({
@@ -72,7 +73,29 @@ export class BookPreviewComponent {
 
   // Set selected book
   bookOnClick(id: string) {
+
     this.BooksService.setSelectedBook(id);
+
+    // Add new entity
+    // if entity is not already available
+    const bookIsAlreadyAnEntity = this.BooksService.bookEntities.getValue().find(book => book.id === id);
+
+    if(!bookIsAlreadyAnEntity) {
+
+      // Get all book entities
+      let newBookEntities = <any>[];
+
+      // Add all old entities
+      this.BooksService.bookEntities.getValue().map( (book) => {
+        newBookEntities.push(book)
+      });
+
+      // Add the new entity
+      newBookEntities.push(this.book);
+
+      // Publish the result as new entities
+      this.BooksService.bookEntities.next(newBookEntities);
+    }
   }
 
   get id() {

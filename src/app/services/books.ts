@@ -17,7 +17,8 @@ import { GoogleBooksService } from './google-books';
 export class BooksService {
 
 
-  idsInCollection: any;
+  idsInCollection: BehaviorSubject<any[]>;
+  idsInCollection$: any;
   bookEntities: BehaviorSubject<any[]>;
 
   selectedBookId: string;
@@ -28,7 +29,7 @@ export class BooksService {
   booksStore: BooksStore;
   collectionStore: CollectionStore;
 
-  books$: Observable<Book[]>;
+  searchResultbooks$: Observable<Book[]>;
 
   booksBehaveSub: BehaviorSubject<Book[]>;
 
@@ -45,9 +46,9 @@ export class BooksService {
   constructor(private AppService: AppService,
               private GoogleBooksService: GoogleBooksService) {
 
-    this.idsInCollection = [];
+    this.idsInCollection = new BehaviorSubject([]);
 
-    this.books$ = this.searchTerms
+    this.searchResultbooks$ = this.searchTerms
       // switch to new observable each time the term changes
       .switchMap( (term) => {
         if (term) {
@@ -67,14 +68,10 @@ export class BooksService {
     // For book collection
     this.bookEntities = new BehaviorSubject([]);
 
-    this.bookEntities.subscribe({
-      next: value => console.log(value)
-    });
-
     this.booksBehaveSub = new BehaviorSubject([]);
     this.collectionBooks$ = this.booksBehaveSub.asObservable();
 
-    this.books$.subscribe({
+    this.searchResultbooks$.subscribe({
       next: (books) => {
 
         this.booksBehaveSub.next(books);
@@ -94,7 +91,7 @@ export class BooksService {
     // Initial bookStore state
     this.booksStore = {
       ids: [],
-      entities: this.books$,
+      entities: this.searchResultbooks$,
       selectedBookId: null
     };
 
@@ -104,6 +101,8 @@ export class BooksService {
       loaded: false,
       ids: new BehaviorSubject('test')
     };
+
+    this.idsInCollection$ = Observable.from(this.idsInCollection);
   }
 
   // Act on the search query
@@ -115,7 +114,7 @@ export class BooksService {
   }
 
   getSelectedBook():Observable<Book> {
-    return Observable.from([this.books$[this.selectedBookId]]);
+    return Observable.from([this.searchResultbooks$[this.selectedBookId]]);
   }
 
   getSelectedBookId():string {
@@ -126,8 +125,12 @@ export class BooksService {
     this.selectedBookId = id;
   }
 
-  addToCollection(book) {
-    this.idsInCollection.push(book.id);
+  addToCollection(book: any) {
+
+    // Book Id
+    let booksIds = this.idsInCollection.getValue();
+    booksIds.push(book.id);
+    this.idsInCollection.next(booksIds);
 
     // Trigger "in collection computation"
     this.checkIfSelectedBookIsInCollection();
@@ -135,27 +138,14 @@ export class BooksService {
 
   removeFromCollection(id: string) {
 
-    // Loop through the books array
-    let bookEntitiesWithoutRemovedEntity = [];
-    this.bookEntities.forEach( (bookArray) => {
-      // Map into each book object
-      bookArray.filter( book => book.id != id)
-              .forEach( book => bookEntitiesWithoutRemovedEntity.push(book));
-    });
-
-    this.bookEntities.next(bookEntitiesWithoutRemovedEntity);
-
-    /*this.bookEntities = this.bookEntities.filter*/
-
-    this.idsInCollection = this.idsInCollection.filter(idFromIds => id != idFromIds);
-
+    this.idsInCollection.next(this.idsInCollection.getValue().filter(idFromIds => id != idFromIds));
 
     // Trigger "in collection computation"
     this.checkIfSelectedBookIsInCollection();
   }
 
   checkIfSelectedBookIsInCollection() {
-    this.isSelectedBookInCollection.next(this.idsInCollection.indexOf(this.getSelectedBookId()) > -1);
+    this.isSelectedBookInCollection.next(this.idsInCollection.getValue().indexOf(this.getSelectedBookId()) > -1);
   }
 
 }

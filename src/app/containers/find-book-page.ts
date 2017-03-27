@@ -36,7 +36,7 @@ export class FindBookPageComponent {
     this.loading$ = AppService.loading$;
 
     // Get books from book service
-    this.books$ = BooksService.books$;
+    this.books$ = BooksService.searchResultbooks$;
   }
 
   // Act on the search query

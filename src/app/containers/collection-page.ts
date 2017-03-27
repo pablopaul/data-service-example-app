@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -31,20 +31,29 @@ import { Book } from '../models/book';
     }
   `]
 })
-export class CollectionPageComponent implements OnInit {
+export class CollectionPageComponent {
   books: any;
   books$: any;
-  collectionBookIds$: Observable<string>;
 
   constructor(private BooksService: BooksService) {
 
-    //this.books$ = store.select(fromRoot.getBookCollection);
-    this.books$ = this.BooksService.bookEntities.asObservable();
+    this.books = new BehaviorSubject([]);
+
+    this.BooksService.idsInCollection$.subscribe({
+      next: (idsInCollection: any) => {
+        idsInCollection.map( (id: any) => {
+          this.BooksService.bookEntities.getValue().filter( entity => {
+            return entity.id === id
+          }).map( entity => {
+            let bookEntities = this.books.getValue();
+            bookEntities.push(entity);
+            this.books.next(bookEntities);
+          })
+        });
+        this.books$ = this.books;
+      }
+    });
+
   }
-
-  ngOnInit() {
-
-  }
-
 
 }

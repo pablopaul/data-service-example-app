@@ -33,17 +33,16 @@ export class SelectedBookPageComponent {
       next: (bookArray: any) => {
 
         // Get the currently selected book
-        const selectedBookArray = bookArray.filter( (book: any) => book.id === this.BooksService.getSelectedBookId() );
+        const selectedBook = bookArray.filter( (book: any) => book.id === this.BooksService.getSelectedBookId() );
 
         // Make the selected book available for the Angular async pipe
-        this.book$ = Observable.from(selectedBookArray);
+        this.book$ = Observable.from(selectedBook);
       }
     });
   }
 
   addToCollection(book: Book) {
     this.BooksService.addToCollection(book);
-
   }
 
   removeFromCollection(book: Book) {

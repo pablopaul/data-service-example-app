@@ -48,7 +48,10 @@ export class AppComponent {
         // Push id to array to check if already in collection
         bookArray.forEach(
           (book: any) => {
-            this.booksService.idsInCollection.push(book.id);
+            let newIds = this.booksService.idsInCollection.getValue();
+            newIds.push(book.id);
+            this.booksService.idsInCollection.next(newIds);
+
             this.booksService.checkIfSelectedBookIsInCollection();
           }
         )
