@@ -1,14 +1,16 @@
 import { Component, Input } from '@angular/core';
 import { Book } from '../models/book';
+import { Observable } from "rxjs";
 
+import { BooksService } from '../services/books';
 
 @Component({
   selector: 'bc-book-preview',
   template: `
-    <a [routerLink]="['/book', id]">
+    <a [routerLink]="['/book', id]" (click)="bookOnClick(id)">
       <md-card>
         <md-card-title-group>
-          <img md-card-sm-image *ngIf="thumbnail" [src]="thumbnail"/>
+          <img md-card-sm-image *ngIf="thumbnail" [src]="thumbnail" />
           <md-card-title>{{ title | bcEllipsis:35 }}</md-card-title>
           <md-card-subtitle *ngIf="subtitle">{{ subtitle | bcEllipsis:40 }}</md-card-subtitle>
         </md-card-title-group>
@@ -65,6 +67,35 @@ import { Book } from '../models/book';
 })
 export class BookPreviewComponent {
   @Input() book: Book;
+
+  constructor(private BooksService: BooksService) {}
+
+  // Set selected book
+  bookOnClick(id: string) {
+
+    this.BooksService.setSelectedBook(id);
+
+    // Add new entity
+    // if entity is not already available
+    const bookIsAlreadyAnEntity = this.BooksService.bookEntities.getValue().find(book => book.id === id);
+
+    if(!bookIsAlreadyAnEntity) {
+
+      // Get all book entities
+      let newBookEntities = <any>[];
+
+      // Add all old entities
+      this.BooksService.bookEntities.getValue().map( (book) => {
+        newBookEntities.push(book)
+      });
+
+      // Add the new entity
+      newBookEntities.push(this.book);
+
+      // Publish the result as new entities
+      this.BooksService.bookEntities.next(newBookEntities);
+    }
+  }
 
   get id() {
     return this.book.id;

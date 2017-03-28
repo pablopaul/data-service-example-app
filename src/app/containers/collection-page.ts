@@ -1,10 +1,10 @@
-import 'rxjs/add/operator/let';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import * as fromRoot from '../reducers';
 import { Book } from '../models/book';
+
+import { BooksService } from '../services/books';
 
 
 @Component({
@@ -31,9 +31,31 @@ import { Book } from '../models/book';
   `]
 })
 export class CollectionPageComponent {
-  books$: Observable<Book[]>;
+  books: any;
+  books$: any;
 
-  constructor(store: Store<fromRoot.State>) {
-    this.books$ = store.select(fromRoot.getBookCollection);
+  constructor(private BooksService: BooksService) {
+
+    this.books = new BehaviorSubject([]);
+
+    this.BooksService.idsInCollection$.subscribe({
+      next: (idsInCollection: any) => {
+        // Get book entities from book ids since not all entities are also in the actual collection
+        idsInCollection.map( (id: any) => {
+          if(this.BooksService.bookEntities.getValue().length) {
+            this.BooksService.bookEntities.getValue().filter(entity => {
+              return entity.id === id
+            }).map(entity => {
+              let bookEntities = this.books.getValue();
+              bookEntities.push(entity);
+              this.books.next(bookEntities);
+            })
+          }
+        });
+        this.books$ = this.books;
+      }
+    });
+
   }
+
 }
