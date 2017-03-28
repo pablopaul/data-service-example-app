@@ -42,13 +42,15 @@ export class CollectionPageComponent {
     this.BooksService.idsInCollection$.subscribe({
       next: (idsInCollection: any) => {
         idsInCollection.map( (id: any) => {
-          this.BooksService.bookEntities.getValue().filter( entity => {
-            return entity.id === id
-          }).map( entity => {
-            let bookEntities = this.books.getValue();
-            bookEntities.push(entity);
-            this.books.next(bookEntities);
-          })
+          if(this.BooksService.bookEntities.getValue().length) {
+            this.BooksService.bookEntities.getValue().filter(entity => {
+              return entity.id === id
+            }).map(entity => {
+              let bookEntities = this.books.getValue();
+              bookEntities.push(entity);
+              this.books.next(bookEntities);
+            })
+          }
         });
         this.books$ = this.books;
       }

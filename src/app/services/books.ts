@@ -12,6 +12,7 @@ import { CollectionStore } from '../models/collection-store';
 
 import { AppService } from './app';
 import { GoogleBooksService } from './google-books';
+import { DbService } from './database';
 
 @Injectable()
 export class BooksService {
@@ -44,7 +45,8 @@ export class BooksService {
   isSelectedBookInCollection$ = this.isSelectedBookInCollection.asObservable();
 
   constructor(private AppService: AppService,
-              private GoogleBooksService: GoogleBooksService) {
+              private GoogleBooksService: GoogleBooksService,
+              private dbService: DbService) {
 
     this.idsInCollection = new BehaviorSubject([]);
 
@@ -134,6 +136,9 @@ export class BooksService {
 
     // Trigger "in collection computation"
     this.checkIfSelectedBookIsInCollection();
+
+    // Save to DB
+    this.dbService.addBook(book);
   }
 
   removeFromCollection(id: string) {

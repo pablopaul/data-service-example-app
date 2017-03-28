@@ -46,15 +46,17 @@ export class AppComponent {
         this.booksService.bookEntities.next(bookArray);
 
         // Push id to array to check if already in collection
-        bookArray.forEach(
-          (book: any) => {
-            let newIds = this.booksService.idsInCollection.getValue();
-            newIds.push(book.id);
-            this.booksService.idsInCollection.next(newIds);
+        if(bookArray.length) {
+          bookArray.forEach(
+            (book: any) => {
+              let newIds = this.booksService.idsInCollection.getValue();
+              newIds.push(book.id);
+              this.booksService.idsInCollection.next(newIds);
 
-            this.booksService.checkIfSelectedBookIsInCollection();
-          }
-        )
+              this.booksService.checkIfSelectedBookIsInCollection();
+            }
+          )
+        }
       }
     });
 

@@ -32,11 +32,14 @@ export class SelectedBookPageComponent {
     this.BooksService.bookEntities.subscribe({
       next: (bookArray: any) => {
 
-        // Get the currently selected book
-        const selectedBook = bookArray.filter( (book: any) => book.id === this.BooksService.getSelectedBookId() );
+        if(bookArray.length) {
 
-        // Make the selected book available for the Angular async pipe
-        this.book$ = Observable.from(selectedBook);
+          // Get the currently selected book
+          const selectedBook = bookArray.filter((book: any) => book.id === this.BooksService.getSelectedBookId());
+
+          // Make the selected book available for the Angular async pipe
+          this.book$ = Observable.from(selectedBook);
+        }
       }
     });
   }
