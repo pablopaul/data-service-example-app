@@ -5,7 +5,6 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/from';
-import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Book } from '../models/book';
 
 import { AppService } from './app';
@@ -37,7 +36,7 @@ export class BooksService {
     this.idsInCollection = new BehaviorSubject([]);
 
     this.searchResultbooks$ = this.searchTerms
-      // switch to new observable each time the term changes
+      // Switch to a new observable each time the search term changes
       .switchMap( (term) => {
         if (term) {
           return this.GoogleBooksService.searchBooks(term);
@@ -55,11 +54,9 @@ export class BooksService {
 
     this.searchResultbooks$.subscribe({
       next: (books) => {
-        // Set loading done
-        this.AppService.setIsLoading(false)
+        this.AppService.setIsLoading(false) // Set loading done
       },
-      error: () => this.AppService.setIsLoading(false), // Set loading done
-      complete: () => this.AppService.setIsLoading(false) // Set loading done
+      error: () => this.AppService.setIsLoading(false) // Set loading done
     });
 
     this.idsInCollection$ = Observable.from(this.idsInCollection);
@@ -87,7 +84,7 @@ export class BooksService {
 
   addToCollection(book: any) {
 
-    // Book Id
+    // Add book id into collection
     let booksIds = this.idsInCollection.getValue();
     booksIds.push(book.id);
     this.idsInCollection.next(booksIds);
@@ -100,7 +97,7 @@ export class BooksService {
   }
 
   removeFromCollection(id: string) {
-
+    // Remove book id from collection
     this.idsInCollection.next(this.idsInCollection.getValue().filter(idFromIds => id != idFromIds));
 
     // Trigger "in collection computation"

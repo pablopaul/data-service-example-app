@@ -40,6 +40,7 @@ export class CollectionPageComponent {
 
     this.BooksService.idsInCollection$.subscribe({
       next: (idsInCollection: any) => {
+        // Get book entities from book ids since not all entities are also in the actual collection
         idsInCollection.map( (id: any) => {
           if(this.BooksService.bookEntities.getValue().length) {
             this.BooksService.bookEntities.getValue().filter(entity => {

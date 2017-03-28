@@ -35,21 +35,20 @@ export class AppComponent {
 
     const localBookCollection$ = this.dbService.loadCollection();
 
-    // Load each book from index db into BooksService
+    // Load each book from db into BooksService
     localBookCollection$.subscribe({
       next: (bookArray) => {
 
         // Put bookArray into booksService
         this.booksService.bookEntities.next(bookArray);
 
-        // Push id to array to check if already in collection
+        // Push book id to collection array
         if(bookArray.length) {
           bookArray.forEach(
             (book: any) => {
               let newIds = this.booksService.idsInCollection.getValue();
               newIds.push(book.id);
               this.booksService.idsInCollection.next(newIds);
-
               this.booksService.checkIfSelectedBookIsInCollection();
             }
           )
@@ -57,8 +56,7 @@ export class AppComponent {
       }
     });
 
-    // Sidenav closed by default
-    this.showSideNav = false;
+    this.showSideNav = false; // SideNav is closed by default
   }
 
   closeSidenav() {

@@ -33,10 +33,10 @@ export class SelectedBookPageComponent {
 
         if(bookArray.length) {
 
-          // Get the currently selected book
+          // Get the currently selected book from book entities
           const selectedBook = bookArray.filter((book: any) => book.id === this.BooksService.getSelectedBookId());
 
-          // Make the selected book available for the Angular async pipe
+          // Make the selected book available as Observable
           this.book$ = Observable.from(selectedBook);
         }
       }

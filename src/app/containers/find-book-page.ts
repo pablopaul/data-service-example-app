@@ -30,7 +30,6 @@ export class FindBookPageComponent {
 
   // Act on the search query
   search(query: string) {
-
     // Kick off the next book search
     this.BooksService.search(query);
   }
