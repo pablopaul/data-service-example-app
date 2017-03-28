@@ -7,8 +7,6 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/from';
 import { IntervalObservable } from 'rxjs/observable/IntervalObservable';
 import { Book } from '../models/book';
-import { BooksStore } from '../models/books-store';
-import { CollectionStore } from '../models/collection-store';
 
 import { AppService } from './app';
 import { GoogleBooksService } from './google-books';
@@ -17,36 +15,24 @@ import { DbService } from './database';
 @Injectable()
 export class BooksService {
 
+  bookEntities: BehaviorSubject<any[]>;
+
+  searchTerms = new Subject<string>();
+  searchResultbooks$: Observable<Book[]>;
 
   idsInCollection: BehaviorSubject<any[]>;
   idsInCollection$: any;
-  bookEntities: BehaviorSubject<any[]>;
 
   selectedBookId: string;
-
-
-  /////
-
-  booksStore: BooksStore;
-  collectionStore: CollectionStore;
-
-  searchResultbooks$: Observable<Book[]>;
-
-  booksBehaveSub: BehaviorSubject<Book[]>;
-
-  collectionBooks$: Observable<Book[]>;
-
-  // Observable string sources
-  private searchTerms = new Subject<string>();
-
-  // Observable boolean source
-  private isSelectedBookInCollection = new BehaviorSubject(false);
-  // Observable boolean stream
+  isSelectedBookInCollection = new BehaviorSubject(false);
   isSelectedBookInCollection$ = this.isSelectedBookInCollection.asObservable();
 
   constructor(private AppService: AppService,
               private GoogleBooksService: GoogleBooksService,
               private dbService: DbService) {
+
+    // Book collection
+    this.bookEntities = new BehaviorSubject([]);
 
     this.idsInCollection = new BehaviorSubject([]);
 
@@ -61,48 +47,20 @@ export class BooksService {
           return Observable.of<Book[]>([])
         }
       })
-      // "Error handling" :)
+      // "Error handling"
       .catch(error => {
         console.log(error);
         return Observable.of<Book[]>([]);
       });
 
-    // For book collection
-    this.bookEntities = new BehaviorSubject([]);
-
-    this.booksBehaveSub = new BehaviorSubject([]);
-    this.collectionBooks$ = this.booksBehaveSub.asObservable();
-
     this.searchResultbooks$.subscribe({
       next: (books) => {
-
-        this.booksBehaveSub.next(books);
-
-        // Store book entities
-        books.map( (book: any) => {
-          this.booksStore.entities[book.id] = book;
-        });
-
         // Set loading done
         this.AppService.setIsLoading(false)
       },
       error: () => this.AppService.setIsLoading(false), // Set loading done
       complete: () => this.AppService.setIsLoading(false) // Set loading done
     });
-
-    // Initial bookStore state
-    this.booksStore = {
-      ids: [],
-      entities: this.searchResultbooks$,
-      selectedBookId: null
-    };
-
-    // Initial bookCollection state
-    this.collectionStore = {
-      loading: false,
-      loaded: false,
-      ids: new BehaviorSubject('test')
-    };
 
     this.idsInCollection$ = Observable.from(this.idsInCollection);
   }
@@ -137,7 +95,7 @@ export class BooksService {
     // Trigger "in collection computation"
     this.checkIfSelectedBookIsInCollection();
 
-    // Save to DB
+    // Remove from Indexed Db
     this.dbService.addBook(book);
   }
 
@@ -147,6 +105,9 @@ export class BooksService {
 
     // Trigger "in collection computation"
     this.checkIfSelectedBookIsInCollection();
+
+    // Remove from Indexed Db
+    this.dbService.removeBook(id);
   }
 
   checkIfSelectedBookIsInCollection() {

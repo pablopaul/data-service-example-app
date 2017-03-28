@@ -23,4 +23,8 @@ export class DbService {
   addBook(book: any) {
     this.db.insert('books', [book]);
   }
+
+  removeBook(id: string) {
+    this.db.executeWrite('books', 'delete', [ id ])
+  }
 }
