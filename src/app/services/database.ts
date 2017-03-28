@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Database } from '@ngrx/db';
 import { Observable } from 'rxjs/Observable';
 import { defer } from 'rxjs/observable/defer';
+import 'rxjs/add/operator/toArray';
 
 
 @Injectable()

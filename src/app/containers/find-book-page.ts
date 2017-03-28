@@ -1,18 +1,7 @@
-import 'rxjs/add/operator/let';
-import 'rxjs/add/operator/take';
-
-// Observable class extensions
-import 'rxjs/add/observable/of';
-
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/last';
-
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
-import * as book from '../actions/book';
 import { Book } from '../models/book';
 
 import { AppService } from '../services/app';

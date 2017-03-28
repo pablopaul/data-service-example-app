@@ -1,8 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
-import * as fromRoot from '../reducers';
-import * as layout from '../actions/layout';
-
 import { DbService } from '../services/database';
 import { BooksService } from '../services/books';
 import { Observable } from "rxjs";

@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { Book } from '../models/book';
-import { BooksService } from '../services/books';
-import {Observable} from "rxjs";
+import { Observable } from "rxjs";
 
+import { BooksService } from '../services/books';
 
 @Component({
   selector: 'bc-book-preview',
@@ -68,8 +68,7 @@ import {Observable} from "rxjs";
 export class BookPreviewComponent {
   @Input() book: Book;
 
-  constructor(private BooksService: BooksService) {
-  }
+  constructor(private BooksService: BooksService) {}
 
   // Set selected book
   bookOnClick(id: string) {

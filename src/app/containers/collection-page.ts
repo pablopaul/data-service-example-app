@@ -2,10 +2,9 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
-import { BooksService } from '../services/books';
-
-import * as fromRoot from '../reducers';
 import { Book } from '../models/book';
+
+import { BooksService } from '../services/books';
 
 
 @Component({
