@@ -19,6 +19,7 @@ import { DbService } from './services/database';
 import { GoogleBooksService } from './services/google-books';
 import { AppService } from './services/app';
 import { BooksService } from './services/books';
+import { WindowRef } from './services/WindowRef';
 
 import { routes } from './routes';
 import { schema } from './db';
@@ -49,7 +50,8 @@ import { schema } from './db';
     GoogleBooksService,
     AppService,
     BooksService,
-    DbService
+    DbService,
+    WindowRef
   ],
   bootstrap: [
     AppComponent

@@ -10,6 +10,7 @@ import { Book } from '../models/book';
 import { AppService } from './app';
 import { GoogleBooksService } from './google-books';
 import { DbService } from './database';
+import { WindowRef } from './WindowRef';
 
 @Injectable()
 export class BooksService {
@@ -28,7 +29,8 @@ export class BooksService {
 
   constructor(private AppService: AppService,
               private GoogleBooksService: GoogleBooksService,
-              private dbService: DbService) {
+              private dbService: DbService,
+              private winRef: WindowRef) {
 
     // Book collection
     this.bookEntities = new BehaviorSubject([]);
@@ -109,6 +111,10 @@ export class BooksService {
 
   checkIfSelectedBookIsInCollection() {
     this.isSelectedBookInCollection.next(this.idsInCollection.getValue().indexOf(this.getSelectedBookId()) > -1);
+  }
+
+  getDbData() {
+    return this.winRef.nativeWindow.ENV.generateData().toArray();
   }
 
 }
