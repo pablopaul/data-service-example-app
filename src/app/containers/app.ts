@@ -144,6 +144,10 @@ export class AppComponent implements OnInit, AfterViewChecked {
     startFPSMonitor();
     startMemMonitor();
     initProfiler("render");
+    this._window.ENV.rows = 10;
+    this._window.ENV.mutations = function() {
+      return 0.5;
+    }
   }
 
   ngAfterViewChecked() {
